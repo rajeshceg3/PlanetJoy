@@ -1,8 +1,25 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, Html, OrbitControls, useTexture, Stars } from '@react-three/drei';
+import { Sphere, Html, CameraControls, useTexture, Stars } from '@react-three/drei';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import useStore from '../store/useStore';
+
+const atmosphereVertexShader = `
+  varying vec3 vNormal;
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const atmosphereFragmentShader = `
+  varying vec3 vNormal;
+  void main() {
+    float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
+    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity;
+  }
+`;
 
 // We convert lat/lon to 3D Cartesian coordinates
 function latLongToVector3(lat, lon, radius) {
@@ -19,64 +36,97 @@ function latLongToVector3(lat, lon, radius) {
 const AnimalMarker = ({ animal, position, onSelect }) => {
   const [hovered, setHovered] = useState(false);
   const markerRef = useRef();
+  const ringRef = useRef();
+
+  // Make the marker face outwards from the globe center
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(
+    new THREE.Vector3(0, 0, 1),
+    position.clone().normalize()
+  );
 
   useFrame((state) => {
+    const t = state.clock.getElapsedTime();
     if (markerRef.current) {
-      // Gentle bounce effect
-      const t = state.clock.getElapsedTime();
-      markerRef.current.position.y = position.y + Math.sin(t * 5 + position.x) * 0.02;
+      // Gentle bounce effect along the normal
+      const normal = position.clone().normalize();
+      const bounce = Math.sin(t * 5 + position.x) * 0.015;
+      const newPos = position.clone().add(normal.multiplyScalar(bounce));
+      markerRef.current.position.copy(newPos);
 
       // Smooth scaling on hover
       const targetScale = hovered ? 1.5 : 1;
       markerRef.current.scale.lerp({ x: targetScale, y: targetScale, z: targetScale }, 0.1);
     }
+
+    if (ringRef.current) {
+      ringRef.current.position.copy(position); // Ring stays at base
+      ringRef.current.quaternion.copy(quaternion); // Ring aligns to normal
+
+      // Radar ping effect
+      let scale = (t * 1.5 + position.x) % 2;
+      ringRef.current.scale.set(scale, scale, scale);
+      ringRef.current.material.opacity = 1.0 - scale / 2; // Fade out as it gets larger
+    }
   });
 
   return (
-    <mesh
-      ref={markerRef}
-      position={position}
-      onClick={() => onSelect(animal)}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHovered(true);
-      }}
-      onPointerOut={(e) => {
-        e.stopPropagation();
-        setHovered(false);
-      }}
-    >
-      <sphereGeometry args={[0.04, 32, 32]} />
-      <meshStandardMaterial
-        color={hovered ? '#ffaa00' : '#ff4444'}
-        emissive={hovered ? '#ffaa00' : '#220000'}
-        emissiveIntensity={hovered ? 0.5 : 0}
-        roughness={0.2}
-      />
-      {hovered && (
-        <Html distanceFactor={10} position={[0, 0.1, 0]} center zIndexRange={[100, 0]}>
-          <div style={{
-            background: 'rgba(0, 0, 0, 0.8)',
-            color: 'white',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            pointerEvents: 'none',
-            whiteSpace: 'nowrap',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
-            border: '1px solid rgba(255,255,255,0.2)'
-          }}>
-            {animal.name}
-          </div>
-        </Html>
-      )}
-    </mesh>
+    <group>
+      {/* Radar Ring */}
+      <mesh ref={ringRef}>
+        <ringGeometry args={[0.05, 0.06, 32]} />
+        <meshBasicMaterial color="#ffcc00" transparent opacity={0.5} side={THREE.DoubleSide} depthTest={false} />
+      </mesh>
+
+      <mesh
+        ref={markerRef}
+        position={position}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(animal);
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHovered(true);
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          setHovered(false);
+        }}
+      >
+        <sphereGeometry args={[0.03, 32, 32]} />
+        <meshStandardMaterial
+          color={hovered ? '#ffff00' : '#ff3333'}
+          emissive={hovered ? '#ffffaa' : '#ff0000'}
+          emissiveIntensity={hovered ? 2.5 : 1.0}
+          roughness={0.2}
+          metalness={0.8}
+        />
+        {hovered && (
+          <Html distanceFactor={10} position={[0, 0.1, 0]} center zIndexRange={[100, 0]}>
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
+              color: 'white',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              pointerEvents: 'none',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
+              {animal.name}
+            </div>
+          </Html>
+        )}
+      </mesh>
+    </group>
   );
 };
 
 export default function Globe() {
   const globeRef = useRef();
+  const cameraControlsRef = useRef();
   const radius = 2; // Globe radius
 
   const cloudsRef = useRef();
@@ -90,6 +140,7 @@ export default function Globe() {
   ]);
 
   const setSelectedAnimal = useStore(state => state.setSelectedAnimal);
+  const selectedAnimal = useStore(state => state.selectedAnimal);
   const addDiscoveredAnimal = useStore(state => state.addDiscoveredAnimal);
 
   const [animalsData, setAnimalsData] = useState(null);
@@ -113,9 +164,30 @@ export default function Globe() {
     return allMarkers;
   }, [animalsData]);
 
-  useFrame(() => {
+  // Camera fly-to logic
+  useEffect(() => {
+    if (cameraControlsRef.current) {
+      if (selectedAnimal) {
+        // Find position of selected animal
+        const position = latLongToVector3(selectedAnimal.lat, selectedAnimal.lon, radius);
+        // Move camera slightly away from the marker for a good view
+        const distance = 3;
+        const camPos = position.clone().normalize().multiplyScalar(distance);
+        cameraControlsRef.current.setLookAt(camPos.x, camPos.y, camPos.z, position.x, position.y, position.z, true);
+      } else {
+        // Reset view or maybe just let the user free roam, but optionally we can zoom out
+        cameraControlsRef.current.dollyTo(5, true);
+      }
+    }
+  }, [selectedAnimal, radius]);
+
+  useFrame((state, delta) => {
     if (cloudsRef.current) {
       cloudsRef.current.rotation.y += 0.0005; // slowly rotate the clouds
+    }
+    // Auto rotate globe if no animal selected
+    if (cameraControlsRef.current && !selectedAnimal) {
+       cameraControlsRef.current.azimuthAngle -= 0.1 * delta; // slow rotation
     }
   });
 
@@ -147,7 +219,8 @@ export default function Globe() {
             bumpScale={0.015}
             roughnessMap={specularMap}
             roughness={0.8}
-            metalness={0.1}
+            metalnessMap={specularMap}
+            metalness={0.5}
           />
         </Sphere>
 
@@ -159,6 +232,17 @@ export default function Globe() {
             opacity={0.4}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
+          />
+        </Sphere>
+
+        {/* Atmosphere Halo */}
+        <Sphere args={[radius * 1.15, 64, 64]}>
+          <shaderMaterial
+            vertexShader={atmosphereVertexShader}
+            fragmentShader={atmosphereFragmentShader}
+            blending={THREE.AdditiveBlending}
+            side={THREE.BackSide}
+            transparent={true}
           />
         </Sphere>
 
@@ -176,16 +260,21 @@ export default function Globe() {
         ))}
       </group>
 
-      <OrbitControls
-        enableZoom={true}
-        enablePan={false}
+      <CameraControls
+        ref={cameraControlsRef}
         minDistance={2.5}
         maxDistance={8}
-        autoRotate={true}
-        autoRotateSpeed={0.5}
-        enableDamping={true}
-        dampingFactor={0.05}
+        mouseButtons={{
+          left: 1, // ACTION.ROTATE
+          middle: 8, // ACTION.DOLLY
+          right: 0, // ACTION.NONE
+          wheel: 8, // ACTION.DOLLY
+        }}
       />
+
+      <EffectComposer>
+        <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} height={300} intensity={1.5} />
+      </EffectComposer>
     </>
   );
 }
