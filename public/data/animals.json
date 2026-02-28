@@ -1,0 +1,26 @@
+{
+  "Africa": [
+    {
+      "id": "lion",
+      "name": "Lion",
+      "lat": -1.9,
+      "lon": 34.5,
+      "sound": "/assets/sounds/lion.mp3",
+      "image": "/assets/animals/lion.png",
+      "description": "I am Leo the Lion! I live in sunny grasslands.",
+      "funFact": "Lions live in groups called prides!"
+    }
+  ],
+  "Asia": [
+    {
+      "id": "panda",
+      "name": "Giant Panda",
+      "lat": 30.0,
+      "lon": 103.0,
+      "sound": "/assets/sounds/panda.mp3",
+      "image": "/assets/animals/panda.png",
+      "description": "I am a Giant Panda! I eat a lot of bamboo.",
+      "funFact": "Pandas can eat up to 38 kilos of bamboo every day!"
+    }
+  ]
+}
