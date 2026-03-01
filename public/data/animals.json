@@ -5,10 +5,88 @@
       "name": "Lion",
       "lat": -1.9,
       "lon": 34.5,
+      "description": "I am Leo the Lion! I live in sunny grasslands.",
+      "funFact": "Lions live in groups called prides!",
       "sound": "/assets/sounds/lion.mp3",
       "image": "/assets/animals/lion.png",
-      "description": "I am Leo the Lion! I live in sunny grasslands.",
-      "funFact": "Lions live in groups called prides!"
+      "emoji": "\ud83e\udd81"
+    },
+    {
+      "id": "elephant",
+      "name": "African Elephant",
+      "lat": -4.0,
+      "lon": 39.0,
+      "description": "I have a long trunk and big ears.",
+      "funFact": "Elephants can communicate using low-frequency sounds!",
+      "sound": "/assets/sounds/elephant.mp3",
+      "image": "/assets/animals/elephant.png",
+      "emoji": "\ud83d\udc18"
+    },
+    {
+      "id": "giraffe",
+      "name": "Giraffe",
+      "lat": 1.0,
+      "lon": 38.0,
+      "description": "I am the tallest land animal!",
+      "funFact": "A giraffe's neck is too short to reach the ground!",
+      "sound": "/assets/sounds/giraffe.mp3",
+      "image": "/assets/animals/giraffe.png",
+      "emoji": "\ud83e\udd92"
+    },
+    {
+      "id": "zebra",
+      "name": "Zebra",
+      "lat": -15.0,
+      "lon": 28.0,
+      "description": "I have black and white stripes.",
+      "funFact": "Every zebra has a unique pattern of stripes.",
+      "sound": "/assets/sounds/zebra.mp3",
+      "image": "/assets/animals/zebra.png",
+      "emoji": "\ud83e\udd93"
+    },
+    {
+      "id": "cheetah",
+      "name": "Cheetah",
+      "lat": -20.0,
+      "lon": 22.0,
+      "description": "I am the fastest land animal.",
+      "funFact": "Cheetahs can accelerate from 0 to 60 mph in 3 seconds!",
+      "sound": "/assets/sounds/cheetah.mp3",
+      "image": "/assets/animals/cheetah.png",
+      "emoji": "\ud83d\udc06"
+    },
+    {
+      "id": "hippo",
+      "name": "Hippopotamus",
+      "lat": -10.0,
+      "lon": 30.0,
+      "description": "I love spending time in the water.",
+      "funFact": "Hippos secrete a natural sunscreen that is red-colored.",
+      "sound": "/assets/sounds/hippo.mp3",
+      "image": "/assets/animals/hippo.png",
+      "emoji": "\ud83e\udd9b"
+    },
+    {
+      "id": "gorilla",
+      "name": "Gorilla",
+      "lat": -1.0,
+      "lon": 29.0,
+      "description": "I am a large and powerful primate.",
+      "funFact": "Gorillas can learn sign language to communicate with humans.",
+      "sound": "/assets/sounds/gorilla.mp3",
+      "image": "/assets/animals/gorilla.png",
+      "emoji": "\ud83e\udd8d"
+    },
+    {
+      "id": "meerkat",
+      "name": "Meerkat",
+      "lat": -25.0,
+      "lon": 21.0,
+      "description": "I am a small mongoose that stands on my hind legs.",
+      "funFact": "Meerkats have dark circles around their eyes to reduce sun glare.",
+      "sound": "/assets/sounds/meerkat.mp3",
+      "image": "/assets/animals/meerkat.png",
+      "emoji": "\ud83e\udda6"
     }
   ],
   "Asia": [
@@ -17,10 +95,351 @@
       "name": "Giant Panda",
       "lat": 30.0,
       "lon": 103.0,
+      "description": "I am a Giant Panda! I eat a lot of bamboo.",
+      "funFact": "Pandas can eat up to 38 kilos of bamboo every day!",
       "sound": "/assets/sounds/panda.mp3",
       "image": "/assets/animals/panda.png",
-      "description": "I am a Giant Panda! I eat a lot of bamboo.",
-      "funFact": "Pandas can eat up to 38 kilos of bamboo every day!"
+      "emoji": "\ud83d\udc3c"
+    },
+    {
+      "id": "tiger",
+      "name": "Bengal Tiger",
+      "lat": 23.0,
+      "lon": 80.0,
+      "description": "I am a large wild cat with a striped coat.",
+      "funFact": "No two tigers have the same stripes.",
+      "sound": "/assets/sounds/tiger.mp3",
+      "image": "/assets/animals/tiger.png",
+      "emoji": "\ud83d\udc05"
+    },
+    {
+      "id": "snow_leopard",
+      "name": "Snow Leopard",
+      "lat": 35.0,
+      "lon": 90.0,
+      "description": "I live in the snowy mountains.",
+      "funFact": "Snow leopards cannot roar!",
+      "sound": "/assets/sounds/snow_leopard.mp3",
+      "image": "/assets/animals/snow_leopard.png",
+      "emoji": "\ud83d\udc06"
+    },
+    {
+      "id": "orangutan",
+      "name": "Orangutan",
+      "lat": -1.0,
+      "lon": 114.0,
+      "description": "I am a highly intelligent great ape.",
+      "funFact": "Orangutans build a new nest to sleep in every night.",
+      "sound": "/assets/sounds/orangutan.mp3",
+      "image": "/assets/animals/orangutan.png",
+      "emoji": "\ud83e\udda7"
+    },
+    {
+      "id": "komodo",
+      "name": "Komodo Dragon",
+      "lat": -8.5,
+      "lon": 119.5,
+      "description": "I am the largest living lizard in the world.",
+      "funFact": "Komodo dragons can eat up to 80% of their body weight in one meal.",
+      "sound": "/assets/sounds/komodo.mp3",
+      "image": "/assets/animals/komodo.png",
+      "emoji": "\ud83e\udd8e"
+    },
+    {
+      "id": "red_panda",
+      "name": "Red Panda",
+      "lat": 27.0,
+      "lon": 88.0,
+      "description": "I am a small arboreal mammal.",
+      "funFact": "Red pandas use their bushy tails as wraparound blankets in the cold.",
+      "sound": "/assets/sounds/red_panda.mp3",
+      "image": "/assets/animals/red_panda.png",
+      "emoji": "\ud83d\udc3c"
+    }
+  ],
+  "North America": [
+    {
+      "id": "eagle",
+      "name": "Bald Eagle",
+      "lat": 45.0,
+      "lon": -100.0,
+      "description": "I am a bird of prey and a national symbol.",
+      "funFact": "Bald eagles are not actually bald; their heads are covered in white feathers.",
+      "sound": "/assets/sounds/eagle.mp3",
+      "image": "/assets/animals/eagle.png",
+      "emoji": "\ud83e\udd85"
+    },
+    {
+      "id": "grizzly",
+      "name": "Grizzly Bear",
+      "lat": 55.0,
+      "lon": -120.0,
+      "description": "I am a large brown bear.",
+      "funFact": "Grizzly bears can run up to 35 mph!",
+      "sound": "/assets/sounds/grizzly.mp3",
+      "image": "/assets/animals/grizzly.png",
+      "emoji": "\ud83d\udc3b"
+    },
+    {
+      "id": "moose",
+      "name": "Moose",
+      "lat": 60.0,
+      "lon": -110.0,
+      "description": "I am the largest species in the deer family.",
+      "funFact": "Moose are excellent swimmers and can hold their breath for up to a minute.",
+      "sound": "/assets/sounds/moose.mp3",
+      "image": "/assets/animals/moose.png",
+      "emoji": "\ud83e\udece"
+    },
+    {
+      "id": "raccoon",
+      "name": "Raccoon",
+      "lat": 40.0,
+      "lon": -90.0,
+      "description": "I am a clever mammal with a masked face.",
+      "funFact": "Raccoons have highly sensitive front paws that they use to 'see' their food.",
+      "sound": "/assets/sounds/raccoon.mp3",
+      "image": "/assets/animals/raccoon.png",
+      "emoji": "\ud83e\udd9d"
+    },
+    {
+      "id": "bison",
+      "name": "American Bison",
+      "lat": 44.0,
+      "lon": -105.0,
+      "description": "I am a large, shaggy bovine.",
+      "funFact": "Bison are the largest terrestrial animals in North America.",
+      "sound": "/assets/sounds/bison.mp3",
+      "image": "/assets/animals/bison.png",
+      "emoji": "\ud83e\uddac"
+    }
+  ],
+  "South America": [
+    {
+      "id": "jaguar",
+      "name": "Jaguar",
+      "lat": -10.0,
+      "lon": -55.0,
+      "description": "I am a large cat native to the Americas.",
+      "funFact": "Jaguars are excellent swimmers and often hunt in the water.",
+      "sound": "/assets/sounds/jaguar.mp3",
+      "image": "/assets/animals/jaguar.png",
+      "emoji": "\ud83d\udc06"
+    },
+    {
+      "id": "sloth",
+      "name": "Sloth",
+      "lat": 5.0,
+      "lon": -60.0,
+      "description": "I am known for being very slow.",
+      "funFact": "Sloths only come down from their trees about once a week.",
+      "sound": "/assets/sounds/sloth.mp3",
+      "image": "/assets/animals/sloth.png",
+      "emoji": "\ud83e\udda5"
+    },
+    {
+      "id": "toucan",
+      "name": "Toucan",
+      "lat": 0.0,
+      "lon": -65.0,
+      "description": "I am a bird with a large, colorful bill.",
+      "funFact": "A toucan's bill can be more than half the length of its body.",
+      "sound": "/assets/sounds/toucan.mp3",
+      "image": "/assets/animals/toucan.png",
+      "emoji": "\ud83e\udd9c"
+    },
+    {
+      "id": "capybara",
+      "name": "Capybara",
+      "lat": -15.0,
+      "lon": -50.0,
+      "description": "I am the largest living rodent in the world.",
+      "funFact": "Capybaras are highly social and often live in groups of 10-20 individuals.",
+      "sound": "/assets/sounds/capybara.mp3",
+      "image": "/assets/animals/capybara.png",
+      "emoji": "\ud83d\udc39"
+    },
+    {
+      "id": "llama",
+      "name": "Llama",
+      "lat": -20.0,
+      "lon": -65.0,
+      "description": "I am a domesticated South American camelid.",
+      "funFact": "Llamas are known to spit when they are annoyed or angry.",
+      "sound": "/assets/sounds/llama.mp3",
+      "image": "/assets/animals/llama.png",
+      "emoji": "\ud83e\udd99"
+    }
+  ],
+  "Europe": [
+    {
+      "id": "fox",
+      "name": "Red Fox",
+      "lat": 50.0,
+      "lon": 10.0,
+      "description": "I am a small, cunning mammal.",
+      "funFact": "Red foxes can hear a watch ticking from 40 yards away.",
+      "sound": "/assets/sounds/fox.mp3",
+      "image": "/assets/animals/fox.png",
+      "emoji": "\ud83e\udd8a"
+    },
+    {
+      "id": "hedgehog",
+      "name": "Hedgehog",
+      "lat": 45.0,
+      "lon": 5.0,
+      "description": "I am a small, spiny mammal.",
+      "funFact": "Hedgehogs have about 5,000 to 7,000 spines on their backs.",
+      "sound": "/assets/sounds/hedgehog.mp3",
+      "image": "/assets/animals/hedgehog.png",
+      "emoji": "\ud83e\udd94"
+    },
+    {
+      "id": "wolf",
+      "name": "Gray Wolf",
+      "lat": 60.0,
+      "lon": 15.0,
+      "description": "I am a large wild canine.",
+      "funFact": "Wolves live and hunt in packs of 6 to 10 animals.",
+      "sound": "/assets/sounds/wolf.mp3",
+      "image": "/assets/animals/wolf.png",
+      "emoji": "\ud83d\udc3a"
+    },
+    {
+      "id": "brown_bear",
+      "name": "Brown Bear",
+      "lat": 65.0,
+      "lon": 20.0,
+      "description": "I am a large bear species.",
+      "funFact": "During winter hibernation, a brown bear's heart rate drops from 40 to 8 beats per minute.",
+      "sound": "/assets/sounds/brown_bear.mp3",
+      "image": "/assets/animals/brown_bear.png",
+      "emoji": "\ud83d\udc3b"
+    },
+    {
+      "id": "reindeer",
+      "name": "Reindeer",
+      "lat": 68.0,
+      "lon": 25.0,
+      "description": "I am a species of deer native to Arctic regions.",
+      "funFact": "Reindeer are the only deer species where both males and females grow antlers.",
+      "sound": "/assets/sounds/reindeer.mp3",
+      "image": "/assets/animals/reindeer.png",
+      "emoji": "\ud83e\udd8c"
+    }
+  ],
+  "Oceania": [
+    {
+      "id": "kangaroo",
+      "name": "Kangaroo",
+      "lat": -25.0,
+      "lon": 135.0,
+      "description": "I am a large marsupial that hops.",
+      "funFact": "Kangaroos cannot walk backwards!",
+      "sound": "/assets/sounds/kangaroo.mp3",
+      "image": "/assets/animals/kangaroo.png",
+      "emoji": "\ud83e\udd98"
+    },
+    {
+      "id": "koala",
+      "name": "Koala",
+      "lat": -30.0,
+      "lon": 150.0,
+      "description": "I am a tree-dwelling marsupial.",
+      "funFact": "Koalas can sleep for up to 22 hours a day!",
+      "sound": "/assets/sounds/koala.mp3",
+      "image": "/assets/animals/koala.png",
+      "emoji": "\ud83d\udc28"
+    },
+    {
+      "id": "platypus",
+      "name": "Platypus",
+      "lat": -35.0,
+      "lon": 145.0,
+      "description": "I am a unique, egg-laying mammal.",
+      "funFact": "The platypus does not have a stomach.",
+      "sound": "/assets/sounds/platypus.mp3",
+      "image": "/assets/animals/platypus.png",
+      "emoji": "\ud83e\udd86"
+    },
+    {
+      "id": "emu",
+      "name": "Emu",
+      "lat": -28.0,
+      "lon": 140.0,
+      "description": "I am the second-tallest living bird.",
+      "funFact": "Emus cannot fly, but they can run at speeds up to 30 mph.",
+      "sound": "/assets/sounds/emu.mp3",
+      "image": "/assets/animals/emu.png",
+      "emoji": "\ud83e\udda4"
+    },
+    {
+      "id": "kiwi",
+      "name": "Kiwi",
+      "lat": -40.0,
+      "lon": 175.0,
+      "description": "I am a flightless bird native to New Zealand.",
+      "funFact": "Kiwis have their nostrils at the very tip of their long beaks.",
+      "sound": "/assets/sounds/kiwi.mp3",
+      "image": "/assets/animals/kiwi.png",
+      "emoji": "\ud83e\udd5d"
+    }
+  ],
+  "Antarctica": [
+    {
+      "id": "emperor_penguin",
+      "name": "Emperor Penguin",
+      "lat": -80.0,
+      "lon": 90.0,
+      "description": "I am the tallest and heaviest of all living penguin species.",
+      "funFact": "Emperor penguins can dive to depths of over 500 meters!",
+      "sound": "/assets/sounds/emperor_penguin.mp3",
+      "image": "/assets/animals/emperor_penguin.png",
+      "emoji": "\ud83d\udc27"
+    },
+    {
+      "id": "leopard_seal",
+      "name": "Leopard Seal",
+      "lat": -70.0,
+      "lon": 60.0,
+      "description": "I am a large and formidable predator.",
+      "funFact": "Leopard seals use their powerful jaws to catch penguins and other seals.",
+      "sound": "/assets/sounds/leopard_seal.mp3",
+      "image": "/assets/animals/leopard_seal.png",
+      "emoji": "\ud83e\uddad"
+    },
+    {
+      "id": "orca",
+      "name": "Orca",
+      "lat": -65.0,
+      "lon": -60.0,
+      "description": "I am a toothed whale and the largest member of the oceanic dolphin family.",
+      "funFact": "Orcas are highly intelligent and have complex social structures.",
+      "sound": "/assets/sounds/orca.mp3",
+      "image": "/assets/animals/orca.png",
+      "emoji": "\ud83d\udc0b"
+    },
+    {
+      "id": "snow_petrel",
+      "name": "Snow Petrel",
+      "lat": -75.0,
+      "lon": 0.0,
+      "description": "I am one of only three birds that breed exclusively in Antarctica.",
+      "funFact": "Snow petrels are completely white with black eyes and a small black bill.",
+      "sound": "/assets/sounds/snow_petrel.mp3",
+      "image": "/assets/animals/snow_petrel.png",
+      "emoji": "\ud83d\udd4a\ufe0f"
+    },
+    {
+      "id": "albatross",
+      "name": "Wandering Albatross",
+      "lat": -60.0,
+      "lon": 120.0,
+      "description": "I am a large seabird with the longest wingspan of any living bird.",
+      "funFact": "An albatross can fly for thousands of miles without flapping its wings.",
+      "sound": "/assets/sounds/albatross.mp3",
+      "image": "/assets/animals/albatross.png",
+      "emoji": "\ud83e\udda4"
     }
   ]
 }

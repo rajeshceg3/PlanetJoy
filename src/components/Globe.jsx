@@ -37,6 +37,8 @@ const AnimalMarker = ({ animal, position, onSelect }) => {
   const [hovered, setHovered] = useState(false);
   const markerRef = useRef();
   const ringRef = useRef();
+  const discoveredAnimals = useStore((state) => state.discoveredAnimals);
+  const isDiscovered = discoveredAnimals.includes(animal.id);
 
   // Make the marker face outwards from the globe center
   const quaternion = new THREE.Quaternion().setFromUnitVectors(
@@ -77,7 +79,7 @@ const AnimalMarker = ({ animal, position, onSelect }) => {
         <meshBasicMaterial color="#ffcc00" transparent opacity={0.5} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
 
-      <mesh
+      <group
         ref={markerRef}
         position={position}
         onClick={(e) => {
@@ -93,33 +95,55 @@ const AnimalMarker = ({ animal, position, onSelect }) => {
           setHovered(false);
         }}
       >
-        <sphereGeometry args={[0.03, 32, 32]} />
-        <meshStandardMaterial
-          color={hovered ? '#ffff00' : '#ff3333'}
-          emissive={hovered ? '#ffffaa' : '#ff0000'}
-          emissiveIntensity={hovered ? 2.5 : 1.0}
-          roughness={0.2}
-          metalness={0.8}
-        />
-        {hovered && (
-          <Html distanceFactor={10} position={[0, 0.1, 0]} center zIndexRange={[100, 0]}>
+        {/* The 3D Base of the figurine */}
+        <mesh quaternion={quaternion}>
+          <cylinderGeometry args={[0.04, 0.04, 0.01, 32]} />
+          <meshStandardMaterial
+            color={hovered ? '#ffff00' : (isDiscovered ? '#33ff33' : '#aaaaaa')}
+            emissive={hovered ? '#ffffaa' : (isDiscovered ? '#115511' : '#333333')}
+            emissiveIntensity={hovered ? 2.5 : 1.0}
+            roughness={0.2}
+            metalness={0.8}
+          />
+        </mesh>
+
+        {/* The 3D Figurine Avatar */}
+        <Html distanceFactor={10} position={[0, 0, 0]} center zIndexRange={[100, 0]}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            pointerEvents: 'none',
+            transform: 'translateY(-20px)'
+          }}>
             <div style={{
-              background: 'rgba(0, 0, 0, 0.8)',
-              color: 'white',
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              pointerEvents: 'none',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
-              border: '1px solid rgba(255,255,255,0.2)'
+              fontSize: '24px',
+              textShadow: '0px 2px 4px rgba(0,0,0,0.8), 0px -1px 2px rgba(255,255,255,0.4)',
+              transform: hovered ? 'scale(1.2)' : 'scale(1)',
+              transition: 'transform 0.2s',
+              filter: isDiscovered ? 'none' : 'grayscale(100%) contrast(0%) brightness(150%)',
             }}>
-              {animal.name}
+              {isDiscovered ? animal.emoji : '❓'}
             </div>
-          </Html>
-        )}
-      </mesh>
+            {hovered && (
+              <div style={{
+                background: 'rgba(0, 0, 0, 0.8)',
+                color: 'white',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                marginTop: '4px'
+              }}>
+                {isDiscovered ? animal.name : 'Unknown Animal'}
+              </div>
+            )}
+          </div>
+        </Html>
+      </group>
     </group>
   );
 };
@@ -145,12 +169,17 @@ export default function Globe() {
 
   const [animalsData, setAnimalsData] = useState(null);
 
+  const setStoreAnimalsData = useStore(state => state.setAnimalsData);
+
   useEffect(() => {
     fetch('/data/animals.json')
       .then(res => res.json())
-      .then(data => setAnimalsData(data))
+      .then(data => {
+        setAnimalsData(data);
+        setStoreAnimalsData(data);
+      })
       .catch(err => console.error("Could not load animals data:", err));
-  }, []);
+  }, [setStoreAnimalsData]);
 
   const markers = useMemo(() => {
     if (!animalsData) return [];
