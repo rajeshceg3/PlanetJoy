@@ -17,7 +17,7 @@ const atmosphereFragmentShader = `
   varying vec3 vNormal;
   void main() {
     float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
-    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity;
+    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity * 1.5;
   }
 `;
 
@@ -33,93 +33,167 @@ function latLongToVector3(lat, lon, radius) {
   return new THREE.Vector3(x, y, z);
 }
 
+// Animal Emoji Map (can be expanded)
+const emojiMap = {
+  lion: '🦁',
+  panda: '🐼',
+  elephant: '🐘',
+  tiger: '🐅',
+  koala: '🐨',
+  kangaroo: '🦘',
+  penguin: '🐧',
+  default: '🐾'
+};
+
 const AnimalMarker = ({ animal, position, onSelect }) => {
   const [hovered, setHovered] = useState(false);
   const markerRef = useRef();
   const ringRef = useRef();
+  const pedestalRef = useRef();
+
+  const isDiscovered = useStore(state => state.discoveredAnimals.includes(animal.id));
 
   // Make the marker face outwards from the globe center
   const quaternion = new THREE.Quaternion().setFromUnitVectors(
-    new THREE.Vector3(0, 0, 1),
+    new THREE.Vector3(0, 1, 0), // Base aligns to Y axis for cylinder
     position.clone().normalize()
   );
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
+
+    // Animate the main marker (emoji container)
     if (markerRef.current) {
-      // Gentle bounce effect along the normal
+      // Bouncing effect along the normal
       const normal = position.clone().normalize();
-      const bounce = Math.sin(t * 5 + position.x) * 0.015;
-      const newPos = position.clone().add(normal.multiplyScalar(bounce));
+      const bounceHeight = isDiscovered ? 0.02 : 0.04;
+      const speed = isDiscovered ? 2 : 5;
+      const bounce = Math.abs(Math.sin(t * speed + position.x)) * bounceHeight;
+      const newPos = position.clone().add(normal.multiplyScalar(bounce + 0.05)); // Offset above pedestal
       markerRef.current.position.copy(newPos);
 
       // Smooth scaling on hover
-      const targetScale = hovered ? 1.5 : 1;
-      markerRef.current.scale.lerp({ x: targetScale, y: targetScale, z: targetScale }, 0.1);
+      const targetScale = hovered ? 1.4 : 1;
+      markerRef.current.scale.lerp({ x: targetScale, y: targetScale, z: targetScale }, 0.2);
     }
 
-    if (ringRef.current) {
-      ringRef.current.position.copy(position); // Ring stays at base
-      ringRef.current.quaternion.copy(quaternion); // Ring aligns to normal
+    if (pedestalRef.current) {
+      pedestalRef.current.position.copy(position);
+      pedestalRef.current.quaternion.copy(quaternion);
+    }
 
-      // Radar ping effect
-      let scale = (t * 1.5 + position.x) % 2;
-      ringRef.current.scale.set(scale, scale, scale);
-      ringRef.current.material.opacity = 1.0 - scale / 2; // Fade out as it gets larger
+    // Animate radar ring if not discovered
+    if (ringRef.current) {
+      ringRef.current.position.copy(position);
+
+      // Ring needs to face out (Z-axis based for ring geometry)
+      const ringQuat = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 0, 1),
+        position.clone().normalize()
+      );
+      ringRef.current.quaternion.copy(ringQuat);
+
+      if (!isDiscovered) {
+        let scale = (t * 2.0 + position.x) % 2;
+        ringRef.current.scale.set(scale, scale, scale);
+        ringRef.current.material.opacity = (1.0 - scale / 2) * 0.8;
+      } else {
+        ringRef.current.material.opacity = 0;
+      }
     }
   });
 
+  const emoji = emojiMap[animal.id] || emojiMap.default;
+
   return (
-    <group>
+    <group
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(animal);
+      }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        setHovered(false);
+        document.body.style.cursor = 'auto';
+      }}
+    >
       {/* Radar Ring */}
       <mesh ref={ringRef}>
-        <ringGeometry args={[0.05, 0.06, 32]} />
-        <meshBasicMaterial color="#ffcc00" transparent opacity={0.5} side={THREE.DoubleSide} depthTest={false} />
+        <ringGeometry args={[0.06, 0.08, 32]} />
+        <meshBasicMaterial color="#4deeea" transparent opacity={0.6} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
 
-      <mesh
-        ref={markerRef}
-        position={position}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect(animal);
-        }}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          setHovered(true);
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          setHovered(false);
-        }}
-      >
-        <sphereGeometry args={[0.03, 32, 32]} />
+      {/* 3D Pedestal */}
+      <mesh ref={pedestalRef}>
+        <cylinderGeometry args={[0.04, 0.06, 0.02, 32]} />
         <meshStandardMaterial
-          color={hovered ? '#ffff00' : '#ff3333'}
-          emissive={hovered ? '#ffffaa' : '#ff0000'}
-          emissiveIntensity={hovered ? 2.5 : 1.0}
-          roughness={0.2}
+          color={isDiscovered ? "#ffd700" : "#ffffff"}
           metalness={0.8}
+          roughness={0.2}
+          emissive={isDiscovered ? "#ffd700" : "#ffffff"}
+          emissiveIntensity={0.2}
         />
-        {hovered && (
-          <Html distanceFactor={10} position={[0, 0.1, 0]} center zIndexRange={[100, 0]}>
-            <div style={{
-              background: 'rgba(0, 0, 0, 0.8)',
-              color: 'white',
-              padding: '4px 8px',
-              borderRadius: '4px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              pointerEvents: 'none',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}>
-              {animal.name}
-            </div>
-          </Html>
-        )}
       </mesh>
+
+      {/* Floating Emoji Marker via HTML */}
+      <group ref={markerRef}>
+        <Html distanceFactor={12} center zIndexRange={[100, 0]}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            transform: hovered ? 'scale(1.2)' : 'scale(1)',
+            filter: isDiscovered ? 'none' : 'grayscale(100%) brightness(0.7)',
+            cursor: 'pointer'
+          }}>
+            {/* The Figurine Emoji */}
+            <div style={{
+              fontSize: '40px',
+              textShadow: '0 4px 8px rgba(0,0,0,0.4)',
+              animation: hovered ? 'wiggle 1s ease-in-out infinite' : 'none',
+              transformOrigin: 'bottom center',
+            }}>
+              {emoji}
+            </div>
+
+            {/* Name Tooltip (Only on Hover or Discovered) */}
+            {(hovered || isDiscovered) && (
+              <div style={{
+                background: isDiscovered ? 'rgba(255, 215, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                color: '#333',
+                padding: '4px 10px',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: '900',
+                marginTop: '4px',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                border: isDiscovered ? '2px solid #b8860b' : '2px solid #ccc',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}>
+                {isDiscovered ? animal.name : '? ? ?'}
+              </div>
+            )}
+
+            <style>
+              {`
+                @keyframes wiggle {
+                  0%, 100% { transform: rotate(-5deg); }
+                  50% { transform: rotate(5deg); }
+                }
+              `}
+            </style>
+          </div>
+        </Html>
+      </group>
     </group>
   );
 };
@@ -193,21 +267,28 @@ export default function Globe() {
 
   return (
     <>
-      <ambientLight intensity={0.15} />
+      <ambientLight intensity={0.2} />
       <directionalLight
-        position={[10, 5, 10]}
-        intensity={2.5}
+        position={[10, 5, 5]}
+        intensity={3.5}
         castShadow
         color="#fffcee"
       />
+      {/* Subtle rim light for the dark side */}
+      <directionalLight
+        position={[-10, -5, -10]}
+        intensity={0.5}
+        color="#4a7cff"
+      />
+
       <Stars
         radius={100}
         depth={50}
-        count={5000}
-        factor={4}
+        count={7000}
+        factor={6}
         saturation={0}
         fade
-        speed={1}
+        speed={1.5}
       />
 
       <group ref={globeRef}>
@@ -216,11 +297,11 @@ export default function Globe() {
           <meshStandardMaterial
             map={colorMap}
             bumpMap={bumpMap}
-            bumpScale={0.015}
+            bumpScale={0.02}
             roughnessMap={specularMap}
-            roughness={0.8}
+            roughness={0.6}
             metalnessMap={specularMap}
-            metalness={0.5}
+            metalness={0.1}
           />
         </Sphere>
 
@@ -273,7 +354,7 @@ export default function Globe() {
       />
 
       <EffectComposer>
-        <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} height={300} intensity={1.5} />
+        <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={1.2} />
       </EffectComposer>
     </>
   );
