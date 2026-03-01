@@ -8,13 +8,24 @@ export default function Overlay() {
 
   return (
     <div style={overlayStyle}>
+      <style>
+        {`
+          @keyframes slideUpFadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+          }
+          .glass-card {
+            animation: slideUpFadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+          }
+        `}
+      </style>
       <h1 style={{ margin: 0, paddingBottom: '10px' }}>PlanetJoy</h1>
       <p style={{ margin: 0, paddingBottom: '20px' }}>
         Discovered Animals: {discoveredAnimals.length}
       </p>
 
       {selectedAnimal && (
-        <div style={cardStyle}>
+        <div className="glass-card" style={cardStyle}>
           <h2>{selectedAnimal.name}</h2>
           <p><strong>Fact:</strong> {selectedAnimal.funFact}</p>
           <p>{selectedAnimal.description}</p>
@@ -47,13 +58,16 @@ const overlayStyle = {
 
 const cardStyle = {
   pointerEvents: 'auto',
-  background: 'rgba(0, 0, 0, 0.8)',
+  background: 'rgba(255, 255, 255, 0.1)',
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  border: '1px solid rgba(255,255,255,0.2)',
   padding: '20px',
-  borderRadius: '10px',
+  borderRadius: '15px',
   maxWidth: '300px',
   marginTop: '20px',
   color: 'white',
-  boxShadow: '0 4px 6px rgba(0,0,0,0.5)'
+  boxShadow: '0 8px 32px 0 rgba(0,0,0,0.37)'
 };
 
 const closeBtnStyle = {
