@@ -1,9 +1,25 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, Html, CameraControls, useTexture, Stars } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { Sphere, Html, CameraControls, useTexture, Stars, Sparkles } from '@react-three/drei';
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import useStore from '../store/useStore';
+
+const innerAtmosphereVertexShader = `
+  varying vec3 vNormal;
+  void main() {
+    vNormal = normalize(normalMatrix * normal);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const innerAtmosphereFragmentShader = `
+  varying vec3 vNormal;
+  void main() {
+    float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
+    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity;
+  }
+`;
 
 const atmosphereVertexShader = `
   varying vec3 vNormal;
@@ -16,8 +32,8 @@ const atmosphereVertexShader = `
 const atmosphereFragmentShader = `
   varying vec3 vNormal;
   void main() {
-    float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
-    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity * 1.5;
+    float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 3.0);
+    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity * 1.2;
   }
 `;
 
@@ -66,14 +82,19 @@ const AnimalMarker = ({ animal, position, onSelect }) => {
     if (markerRef.current) {
       // Bouncing effect along the normal
       const normal = position.clone().normalize();
-      const bounceHeight = isDiscovered ? 0.02 : 0.04;
-      const speed = isDiscovered ? 2 : 5;
-      const bounce = Math.abs(Math.sin(t * speed + position.x)) * bounceHeight;
-      const newPos = position.clone().add(normal.multiplyScalar(bounce + 0.05)); // Offset above pedestal
+      // More playful bounce when hovered or undiscovered
+      const bounceHeight = isDiscovered ? (hovered ? 0.04 : 0.02) : 0.05;
+      const speed = isDiscovered ? (hovered ? 6 : 2) : 5;
+
+      // Combine two sine waves for a more organic "joyful" bounce
+      const bounce = (Math.sin(t * speed + position.x) + Math.sin(t * speed * 0.5)) * 0.5 * bounceHeight;
+      const baseOffset = isDiscovered ? 0.05 : 0.08;
+
+      const newPos = position.clone().add(normal.multiplyScalar(Math.abs(bounce) + baseOffset));
       markerRef.current.position.copy(newPos);
 
-      // Smooth scaling on hover
-      const targetScale = hovered ? 1.4 : 1;
+      // Smooth scaling on hover with a bit of "pop"
+      const targetScale = hovered ? 1.5 : 1;
       markerRef.current.scale.lerp({ x: targetScale, y: targetScale, z: targetScale }, 0.2);
     }
 
@@ -139,6 +160,20 @@ const AnimalMarker = ({ animal, position, onSelect }) => {
           emissiveIntensity={0.2}
         />
       </mesh>
+
+      {/* Magical Sparkles around the marker */}
+      {hovered && (
+        <group position={position}>
+          <Sparkles
+            count={isDiscovered ? 20 : 30}
+            scale={0.3}
+            size={4}
+            speed={0.4}
+            opacity={0.8}
+            color={isDiscovered ? "#ffd700" : "#4deeea"}
+          />
+        </group>
+      )}
 
       {/* Floating Emoji Marker via HTML */}
       <group ref={markerRef}>
@@ -267,17 +302,23 @@ export default function Globe() {
 
   return (
     <>
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={0.1} />
       <directionalLight
-        position={[10, 5, 5]}
+        position={[20, 10, 10]}
         intensity={3.5}
         castShadow
         color="#fffcee"
       />
+      {/* Visible Sun mesh at directional light position */}
+      <mesh position={[40, 20, 20]}>
+        <sphereGeometry args={[1.5, 32, 32]} />
+        <meshBasicMaterial color="#ffffee" />
+      </mesh>
+
       {/* Subtle rim light for the dark side */}
       <directionalLight
-        position={[-10, -5, -10]}
-        intensity={0.5}
+        position={[-15, -5, -15]}
+        intensity={0.3}
         color="#4a7cff"
       />
 
@@ -292,16 +333,26 @@ export default function Globe() {
       />
 
       <group ref={globeRef}>
+        {/* Inner Atmosphere (Rayleigh scattering edge) */}
+        <Sphere args={[radius * 1.005, 64, 64]}>
+          <shaderMaterial
+            vertexShader={innerAtmosphereVertexShader}
+            fragmentShader={innerAtmosphereFragmentShader}
+            blending={THREE.AdditiveBlending}
+            transparent={true}
+          />
+        </Sphere>
+
         {/* The Earth Sphere */}
         <Sphere args={[radius, 64, 64]}>
           <meshStandardMaterial
             map={colorMap}
             bumpMap={bumpMap}
-            bumpScale={0.02}
+            bumpScale={0.03}
             roughnessMap={specularMap}
-            roughness={0.6}
+            roughness={0.5}
             metalnessMap={specularMap}
-            metalness={0.1}
+            metalness={0.2}
           />
         </Sphere>
 
@@ -310,8 +361,8 @@ export default function Globe() {
           <meshStandardMaterial
             map={cloudsMap}
             transparent={true}
-            opacity={0.4}
-            blending={THREE.AdditiveBlending}
+            opacity={0.6}
+            blending={THREE.NormalBlending}
             depthWrite={false}
           />
         </Sphere>
@@ -354,7 +405,14 @@ export default function Globe() {
       />
 
       <EffectComposer>
-        <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} height={300} intensity={1.2} />
+        <Bloom
+          luminanceThreshold={0.5}
+          luminanceSmoothing={0.9}
+          height={300}
+          intensity={1.5}
+          mipmapBlur
+        />
+        <Vignette eskil={false} offset={0.1} darkness={1.1} />
       </EffectComposer>
     </>
   );
