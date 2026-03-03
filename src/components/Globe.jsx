@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, Html, CameraControls, useTexture, Stars, Sparkles } from '@react-three/drei';
+import { Sphere, Html, CameraControls, useTexture, Stars, Sparkles, Environment } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import useStore from '../store/useStore';
@@ -16,8 +16,8 @@ const innerAtmosphereVertexShader = `
 const innerAtmosphereFragmentShader = `
   varying vec3 vNormal;
   void main() {
-    float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
-    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity;
+    float intensity = pow(0.55 - dot(vNormal, vec3(0, 0, 1.0)), 2.5);
+    gl_FragColor = vec4(0.2, 0.5, 1.0, 1.0) * intensity;
   }
 `;
 
@@ -32,8 +32,8 @@ const atmosphereVertexShader = `
 const atmosphereFragmentShader = `
   varying vec3 vNormal;
   void main() {
-    float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 3.0);
-    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity * 1.2;
+    float intensity = pow(0.7 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
+    gl_FragColor = vec4(0.3, 0.7, 1.0, 1.0) * intensity * 1.5;
   }
 `;
 
@@ -93,8 +93,15 @@ const AnimalMarker = ({ animal, position, onSelect }) => {
       const newPos = position.clone().add(normal.multiplyScalar(Math.abs(bounce) + baseOffset));
       markerRef.current.position.copy(newPos);
 
-      // Smooth scaling on hover with a bit of "pop"
-      const targetScale = hovered ? 1.5 : 1;
+      // Smooth scaling on hover and a pop in when discovered
+      let targetScale = 1;
+      if (hovered) {
+        targetScale = 1.5;
+      } else if (isDiscovered) {
+        // slight pulsating if discovered but not hovered to keep it alive and fun
+        targetScale = 1.0 + Math.sin(t * 3) * 0.05;
+      }
+
       markerRef.current.scale.lerp({ x: targetScale, y: targetScale, z: targetScale }, 0.2);
     }
 
@@ -350,9 +357,12 @@ export default function Globe() {
             bumpMap={bumpMap}
             bumpScale={0.03}
             roughnessMap={specularMap}
-            roughness={0.5}
+            roughness={0.4}
             metalnessMap={specularMap}
-            metalness={0.2}
+            metalness={0.4}
+            emissiveMap={specularMap}
+            emissive="#001133"
+            emissiveIntensity={0.2}
           />
         </Sphere>
 
@@ -392,6 +402,8 @@ export default function Globe() {
         ))}
       </group>
 
+      <Environment preset="night" />
+
       <CameraControls
         ref={cameraControlsRef}
         minDistance={2.5}
@@ -406,10 +418,10 @@ export default function Globe() {
 
       <EffectComposer>
         <Bloom
-          luminanceThreshold={0.5}
+          luminanceThreshold={0.2}
           luminanceSmoothing={0.9}
           height={300}
-          intensity={1.5}
+          intensity={2.5}
           mipmapBlur
         />
         <Vignette eskil={false} offset={0.1} darkness={1.1} />
