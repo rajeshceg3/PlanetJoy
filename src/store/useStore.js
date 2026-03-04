@@ -4,6 +4,9 @@ const useStore = create((set) => ({
   visitedContinents: JSON.parse(localStorage.getItem('visitedContinents')) || [],
   discoveredAnimals: JSON.parse(localStorage.getItem('discoveredAnimals')) || [],
   selectedAnimal: null,
+  totalAnimals: 0,
+
+  setTotalAnimals: (count) => set({ totalAnimals: count }),
 
   addVisitedContinent: (continent) => set((state) => {
     if (!state.visitedContinents.includes(continent)) {

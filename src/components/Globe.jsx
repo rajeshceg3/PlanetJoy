@@ -54,14 +54,40 @@ const emojiMap = {
   lion: '🦁',
   panda: '🐼',
   elephant: '🐘',
+  giraffe: '🦒',
+  zebra: '🦓',
+  hippo: '🦛',
   tiger: '🐅',
+  orangutan: '🦧',
+  snow_leopard: '🐆',
+  camel: '🐪',
+  bald_eagle: '🦅',
+  grizzly_bear: '🐻',
+  moose: '🦌',
+  wolf: '🐺',
+  raccoon: '🦝',
+  jaguar: '🐆',
+  sloth: '🦥',
+  toucan: '🦜',
+  llama: '🦙',
+  capybara: '🐹',
+  brown_bear: '🐻',
+  reindeer: '🦌',
+  fox: '🦊',
+  lynx: '🐱',
   koala: '🐨',
   kangaroo: '🦘',
+  platypus: '🦆',
+  emu: '🦤',
+  tasmanian_devil: '😈',
   penguin: '🐧',
+  seal: '🦭',
+  walrus: '🦭',
+  polar_bear: '🐻‍❄️',
   default: '🐾'
 };
 
-const AnimalMarker = ({ animal, position, onSelect }) => {
+const AnimalMarker = ({ animal, position, onSelect, earthRef }) => {
   const [hovered, setHovered] = useState(false);
   const markerRef = useRef();
   const ringRef = useRef();
@@ -184,7 +210,7 @@ const AnimalMarker = ({ animal, position, onSelect }) => {
 
       {/* Floating Emoji Marker via HTML */}
       <group ref={markerRef}>
-        <Html distanceFactor={12} center zIndexRange={[100, 0]}>
+        <Html distanceFactor={12} center zIndexRange={[100, 0]} occlude={earthRef ? [earthRef] : undefined}>
           <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -242,6 +268,7 @@ const AnimalMarker = ({ animal, position, onSelect }) => {
 
 export default function Globe() {
   const globeRef = useRef();
+  const earthRef = useRef();
   const cameraControlsRef = useRef();
   const radius = 2; // Globe radius
 
@@ -258,15 +285,23 @@ export default function Globe() {
   const setSelectedAnimal = useStore(state => state.setSelectedAnimal);
   const selectedAnimal = useStore(state => state.selectedAnimal);
   const addDiscoveredAnimal = useStore(state => state.addDiscoveredAnimal);
+  const setTotalAnimals = useStore(state => state.setTotalAnimals);
 
   const [animalsData, setAnimalsData] = useState(null);
 
   useEffect(() => {
     fetch('/data/animals.json')
       .then(res => res.json())
-      .then(data => setAnimalsData(data))
+      .then(data => {
+        setAnimalsData(data);
+        let count = 0;
+        Object.keys(data).forEach(continent => {
+          count += data[continent].length;
+        });
+        setTotalAnimals(count);
+      })
       .catch(err => console.error("Could not load animals data:", err));
-  }, []);
+  }, [setTotalAnimals]);
 
   const markers = useMemo(() => {
     if (!animalsData) return [];
@@ -351,7 +386,7 @@ export default function Globe() {
         </Sphere>
 
         {/* The Earth Sphere */}
-        <Sphere args={[radius, 64, 64]}>
+        <Sphere args={[radius, 64, 64]} ref={earthRef}>
           <meshStandardMaterial
             map={colorMap}
             bumpMap={bumpMap}
@@ -394,6 +429,7 @@ export default function Globe() {
             key={index}
             animal={marker}
             position={marker.position}
+            earthRef={earthRef}
             onSelect={(animal) => {
               setSelectedAnimal(animal);
               addDiscoveredAnimal(animal.id);
