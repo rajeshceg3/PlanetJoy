@@ -9,6 +9,46 @@
       "image": "/assets/animals/lion.png",
       "description": "I am Leo the Lion! I live in sunny grasslands.",
       "funFact": "Lions live in groups called prides!"
+    },
+    {
+      "id": "elephant",
+      "name": "African Elephant",
+      "lat": -3.5,
+      "lon": 37.0,
+      "sound": "/assets/sounds/elephant.mp3",
+      "image": "/assets/animals/elephant.png",
+      "description": "I am an African Elephant, the largest land animal.",
+      "funFact": "An elephant's trunk has over 40,000 muscles!"
+    },
+    {
+      "id": "giraffe",
+      "name": "Giraffe",
+      "lat": 1.2,
+      "lon": 36.8,
+      "sound": "/assets/sounds/giraffe.mp3",
+      "image": "/assets/animals/giraffe.png",
+      "description": "I am a tall Giraffe! I love eating leaves from the treetops.",
+      "funFact": "Giraffes have the same number of neck vertebrae as humans—just much bigger!"
+    },
+    {
+      "id": "zebra",
+      "name": "Zebra",
+      "lat": -15.0,
+      "lon": 25.0,
+      "sound": "/assets/sounds/zebra.mp3",
+      "image": "/assets/animals/zebra.png",
+      "description": "I am a Zebra with cool black and white stripes.",
+      "funFact": "No two zebras have the same stripe pattern."
+    },
+    {
+      "id": "hippo",
+      "name": "Hippopotamus",
+      "lat": 0.5,
+      "lon": 32.0,
+      "sound": "/assets/sounds/hippo.mp3",
+      "image": "/assets/animals/hippo.png",
+      "description": "I am a Hippo! I love spending time in the water.",
+      "funFact": "Hippos secrete a reddish substance that acts as a natural sunscreen."
     }
   ],
   "Asia": [
@@ -21,6 +61,286 @@
       "image": "/assets/animals/panda.png",
       "description": "I am a Giant Panda! I eat a lot of bamboo.",
       "funFact": "Pandas can eat up to 38 kilos of bamboo every day!"
+    },
+    {
+      "id": "tiger",
+      "name": "Bengal Tiger",
+      "lat": 23.5,
+      "lon": 80.0,
+      "sound": "/assets/sounds/tiger.mp3",
+      "image": "/assets/animals/tiger.png",
+      "description": "I am a Bengal Tiger! I am a very strong swimmer.",
+      "funFact": "A tiger's roar can be heard as far as 3 kilometers away!"
+    },
+    {
+      "id": "orangutan",
+      "name": "Orangutan",
+      "lat": -0.5,
+      "lon": 114.0,
+      "sound": "/assets/sounds/orangutan.mp3",
+      "image": "/assets/animals/orangutan.png",
+      "description": "I am an Orangutan. I spend most of my time in trees.",
+      "funFact": "Orangutans are the heaviest tree-dwelling animals."
+    },
+    {
+      "id": "snow_leopard",
+      "name": "Snow Leopard",
+      "lat": 35.0,
+      "lon": 75.0,
+      "sound": "/assets/sounds/snow_leopard.mp3",
+      "image": "/assets/animals/snow_leopard.png",
+      "description": "I am a Snow Leopard! I live in high, snowy mountains.",
+      "funFact": "Snow leopards have long tails they use like blankets to keep warm!"
+    },
+    {
+      "id": "camel",
+      "name": "Bactrian Camel",
+      "lat": 44.0,
+      "lon": 105.0,
+      "sound": "/assets/sounds/camel.mp3",
+      "image": "/assets/animals/camel.png",
+      "description": "I am a Bactrian Camel. I have two humps!",
+      "funFact": "A camel's humps store fat, not water, which gives them energy."
+    }
+  ],
+  "North America": [
+    {
+      "id": "bald_eagle",
+      "name": "Bald Eagle",
+      "lat": 45.0,
+      "lon": -100.0,
+      "sound": "/assets/sounds/bald_eagle.mp3",
+      "image": "/assets/animals/bald_eagle.png",
+      "description": "I am a Bald Eagle! I can fly very high and have great eyesight.",
+      "funFact": "Bald eagles can spot a fish from a mile away!"
+    },
+    {
+      "id": "grizzly_bear",
+      "name": "Grizzly Bear",
+      "lat": 55.0,
+      "lon": -120.0,
+      "sound": "/assets/sounds/grizzly_bear.mp3",
+      "image": "/assets/animals/grizzly_bear.png",
+      "description": "I am a Grizzly Bear. I love catching salmon in the river.",
+      "funFact": "Grizzly bears hibernate for up to 7 months a year."
+    },
+    {
+      "id": "moose",
+      "name": "Moose",
+      "lat": 60.0,
+      "lon": -110.0,
+      "sound": "/assets/sounds/moose.mp3",
+      "image": "/assets/animals/moose.png",
+      "description": "I am a Moose! I am the largest member of the deer family.",
+      "funFact": "A moose's antlers can spread over 6 feet wide!"
+    },
+    {
+      "id": "wolf",
+      "name": "Gray Wolf",
+      "lat": 50.0,
+      "lon": -105.0,
+      "sound": "/assets/sounds/wolf.mp3",
+      "image": "/assets/animals/wolf.png",
+      "description": "I am a Gray Wolf. I travel with my family pack.",
+      "funFact": "Wolves howl to communicate with other members of their pack."
+    },
+    {
+      "id": "raccoon",
+      "name": "Raccoon",
+      "lat": 40.0,
+      "lon": -85.0,
+      "sound": "/assets/sounds/raccoon.mp3",
+      "image": "/assets/animals/raccoon.png",
+      "description": "I am a Raccoon! I wear a natural mask and I am very curious.",
+      "funFact": "Raccoons have highly sensitive front paws that they use to 'see' their food."
+    }
+  ],
+  "South America": [
+    {
+      "id": "jaguar",
+      "name": "Jaguar",
+      "lat": -3.0,
+      "lon": -60.0,
+      "sound": "/assets/sounds/jaguar.mp3",
+      "image": "/assets/animals/jaguar.png",
+      "description": "I am a Jaguar! I live in the rainforest.",
+      "funFact": "Jaguars have the strongest bite of any big cat!"
+    },
+    {
+      "id": "sloth",
+      "name": "Three-toed Sloth",
+      "lat": 5.0,
+      "lon": -65.0,
+      "sound": "/assets/sounds/sloth.mp3",
+      "image": "/assets/animals/sloth.png",
+      "description": "I am a Sloth. I move very slowly through the trees.",
+      "funFact": "Sloths move so slowly that algae actually grows on their fur."
+    },
+    {
+      "id": "toucan",
+      "name": "Toco Toucan",
+      "lat": -10.0,
+      "lon": -55.0,
+      "sound": "/assets/sounds/toucan.mp3",
+      "image": "/assets/animals/toucan.png",
+      "description": "I am a Toucan! Look at my colorful beak!",
+      "funFact": "A toucan's beak makes up about a third of its entire length!"
+    },
+    {
+      "id": "llama",
+      "name": "Llama",
+      "lat": -15.0,
+      "lon": -70.0,
+      "sound": "/assets/sounds/llama.mp3",
+      "image": "/assets/animals/llama.png",
+      "description": "I am a Llama. I live high up in the Andes mountains.",
+      "funFact": "Llamas are very social and live with other llamas as a herd."
+    },
+    {
+      "id": "capybara",
+      "name": "Capybara",
+      "lat": -5.0,
+      "lon": -50.0,
+      "sound": "/assets/sounds/capybara.mp3",
+      "image": "/assets/animals/capybara.png",
+      "description": "I am a Capybara. I'm the biggest rodent in the world.",
+      "funFact": "Capybaras are excellent swimmers and can hold their breath for 5 minutes."
+    }
+  ],
+  "Europe": [
+    {
+      "id": "brown_bear",
+      "name": "Brown Bear",
+      "lat": 45.0,
+      "lon": 25.0,
+      "sound": "/assets/sounds/brown_bear.mp3",
+      "image": "/assets/animals/brown_bear.png",
+      "description": "I am a Brown Bear! I live in European forests.",
+      "funFact": "Brown bears can run very fast, up to 30 miles per hour!"
+    },
+    {
+      "id": "reindeer",
+      "name": "Reindeer",
+      "lat": 65.0,
+      "lon": 20.0,
+      "sound": "/assets/sounds/reindeer.mp3",
+      "image": "/assets/animals/reindeer.png",
+      "description": "I am a Reindeer! I live in the snowy north.",
+      "funFact": "Both male and female reindeer grow antlers."
+    },
+    {
+      "id": "fox",
+      "name": "Red Fox",
+      "lat": 50.0,
+      "lon": 10.0,
+      "sound": "/assets/sounds/fox.mp3",
+      "image": "/assets/animals/fox.png",
+      "description": "I am a Red Fox. I am very clever.",
+      "funFact": "Foxes use the Earth's magnetic field to help them hunt."
+    },
+    {
+      "id": "lynx",
+      "name": "Eurasian Lynx",
+      "lat": 55.0,
+      "lon": 30.0,
+      "sound": "/assets/sounds/lynx.mp3",
+      "image": "/assets/animals/lynx.png",
+      "description": "I am a Lynx! I have tufts of hair on my ears.",
+      "funFact": "A lynx's big furry paws act like natural snowshoes."
+    }
+  ],
+  "Australia": [
+    {
+      "id": "kangaroo",
+      "name": "Kangaroo",
+      "lat": -25.0,
+      "lon": 135.0,
+      "sound": "/assets/sounds/kangaroo.mp3",
+      "image": "/assets/animals/kangaroo.png",
+      "description": "I am a Kangaroo! I can jump really far.",
+      "funFact": "Kangaroos use their strong tail for balance while hopping."
+    },
+    {
+      "id": "koala",
+      "name": "Koala",
+      "lat": -30.0,
+      "lon": 145.0,
+      "sound": "/assets/sounds/koala.mp3",
+      "image": "/assets/animals/koala.png",
+      "description": "I am a Koala. I spend my days sleeping in eucalyptus trees.",
+      "funFact": "Koalas can sleep up to 22 hours a day!"
+    },
+    {
+      "id": "platypus",
+      "name": "Platypus",
+      "lat": -35.0,
+      "lon": 149.0,
+      "sound": "/assets/sounds/platypus.mp3",
+      "image": "/assets/animals/platypus.png",
+      "description": "I am a Platypus. I have a bill like a duck and I lay eggs.",
+      "funFact": "Platypuses don't have stomachs!"
+    },
+    {
+      "id": "emu",
+      "name": "Emu",
+      "lat": -22.0,
+      "lon": 125.0,
+      "sound": "/assets/sounds/emu.mp3",
+      "image": "/assets/animals/emu.png",
+      "description": "I am an Emu! I am a bird but I cannot fly.",
+      "funFact": "Emus are the second-tallest bird in the world, after the ostrich."
+    },
+    {
+      "id": "tasmanian_devil",
+      "name": "Tasmanian Devil",
+      "lat": -42.0,
+      "lon": 146.0,
+      "sound": "/assets/sounds/tasmanian_devil.mp3",
+      "image": "/assets/animals/tasmanian_devil.png",
+      "description": "I am a Tasmanian Devil! I live on the island of Tasmania.",
+      "funFact": "Tasmanian devils have one of the most powerful bites of any mammal for their size."
+    }
+  ],
+  "Antarctica": [
+    {
+      "id": "penguin",
+      "name": "Emperor Penguin",
+      "lat": -75.0,
+      "lon": 0.0,
+      "sound": "/assets/sounds/penguin.mp3",
+      "image": "/assets/animals/penguin.png",
+      "description": "I am a Penguin! I love sliding on the ice.",
+      "funFact": "Emperor penguins huddle together to stay warm in the freezing cold."
+    },
+    {
+      "id": "seal",
+      "name": "Weddell Seal",
+      "lat": -70.0,
+      "lon": 45.0,
+      "sound": "/assets/sounds/seal.mp3",
+      "image": "/assets/animals/seal.png",
+      "description": "I am a Seal! I am a great swimmer.",
+      "funFact": "Weddell seals can hold their breath for up to 80 minutes underwater."
+    },
+    {
+      "id": "walrus",
+      "name": "Walrus",
+      "lat": 75.0,
+      "lon": -100.0,
+      "sound": "/assets/sounds/walrus.mp3",
+      "image": "/assets/animals/walrus.png",
+      "description": "I am a Walrus! I have long tusks.",
+      "funFact": "Walruses can sleep while floating in the water!"
+    },
+    {
+      "id": "polar_bear",
+      "name": "Polar Bear",
+      "lat": 80.0,
+      "lon": -40.0,
+      "sound": "/assets/sounds/polar_bear.mp3",
+      "image": "/assets/animals/polar_bear.png",
+      "description": "I am a Polar Bear! I live near the North Pole.",
+      "funFact": "Polar bear fur is actually transparent, not white!"
     }
   ]
 }

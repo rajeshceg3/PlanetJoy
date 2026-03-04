@@ -7,10 +7,8 @@ export default function Overlay() {
   const selectedAnimal = useStore((state) => state.selectedAnimal);
   const setSelectedAnimal = useStore((state) => state.setSelectedAnimal);
   const discoveredAnimals = useStore((state) => state.discoveredAnimals);
+  const totalAnimals = useStore((state) => state.totalAnimals);
   const prevDiscoveredLength = useRef(discoveredAnimals.length);
-
-  // Total animals placeholder. Ideally fetched, but hardcoded here for demo
-  const TOTAL_ANIMALS = 2; // based on animals.json (Lion, Panda)
 
   const [showGallery, setShowGallery] = useState(false);
 
@@ -69,7 +67,7 @@ export default function Overlay() {
         <div style={{ display: 'flex', gap: '15px' }}>
           <div style={pillStyle}>
             <Trophy size={18} color="#ffd700" />
-            <span>{discoveredAnimals.length} / {TOTAL_ANIMALS} Discovered</span>
+            <span>{discoveredAnimals.length} / {totalAnimals > 0 ? totalAnimals : '?'} Discovered</span>
           </div>
 
           <button
@@ -137,7 +135,8 @@ const overlayStyle = {
   padding: '20px',
   boxSizing: 'border-box',
   color: 'white',
-  fontFamily: '"Nunito", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+  fontFamily: '"Nunito", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+  zIndex: 1000
 };
 
 const topBarStyle = {

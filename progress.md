@@ -26,5 +26,11 @@
 - Prepared project to be 100% compliant with the MVP architecture constraints and requirements outlined in `PRD.md`.
 - No backend logic, database, or external APIs are used (fully client-side WebGL educational globe).
 
+## Recent Enhancements
+- Expanded animal dataset: Made the application comprehensive by adding over 30 new animals to `animals.json` across all continents, including detailed descriptions and fun facts.
+- Fixed markers to the globe location: Used `@react-three/drei`'s `occlude` property with `earthRef` to accurately hide HTML animal markers when they are rotated to the non-visible side of the 3D sphere.
+- UI layer fixes: Applied `zIndex: 1000` to the `Overlay.jsx` component to prevent the newly added 3D markers from bleeding through and overlapping the UI modal when many animals are present.
+- Dynamic tracking: Updated the global store (`useStore.js`) and UI components (`Globe.jsx`, `Overlay.jsx`) to dynamically compute and display the total number of animals based on the fetched JSON file.
+
 ## Completion Percentage
 - Estimated completion is 100% of the MVP architecture constraints and requirements outlined in `PRD.md`.
