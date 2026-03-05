@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import useStore from '../store/useStore';
 import confetti from 'canvas-confetti';
 import { BookOpen, Trophy, X } from 'lucide-react';
+import { playHoverSound } from '../utils/soundEffects';
 
 export default function Overlay() {
   const selectedAnimal = useStore((state) => state.selectedAnimal);
@@ -73,6 +74,7 @@ export default function Overlay() {
           <button
             className="btn-hover"
             style={galleryBtnStyle}
+            onPointerOver={playHoverSound}
             onClick={() => setShowGallery(!showGallery)}
           >
             <BookOpen size={18} />

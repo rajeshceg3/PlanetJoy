@@ -1,9 +1,10 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sphere, Html, CameraControls, useTexture, Stars, Sparkles, Environment } from '@react-three/drei';
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Vignette, DepthOfField } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import useStore from '../store/useStore';
+import { playHoverSound, playDiscoverSound, playSwooshSound } from '../utils/soundEffects';
 
 const innerAtmosphereVertexShader = `
   varying vec3 vNormal;
@@ -16,8 +17,8 @@ const innerAtmosphereVertexShader = `
 const innerAtmosphereFragmentShader = `
   varying vec3 vNormal;
   void main() {
-    float intensity = pow(0.55 - dot(vNormal, vec3(0, 0, 1.0)), 2.5);
-    gl_FragColor = vec4(0.2, 0.5, 1.0, 1.0) * intensity;
+    float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 3.0);
+    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity * 1.5;
   }
 `;
 
@@ -32,8 +33,8 @@ const atmosphereVertexShader = `
 const atmosphereFragmentShader = `
   varying vec3 vNormal;
   void main() {
-    float intensity = pow(0.7 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
-    gl_FragColor = vec4(0.3, 0.7, 1.0, 1.0) * intensity * 1.5;
+    float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
+    gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity * 2.0;
   }
 `;
 
@@ -113,22 +114,36 @@ const AnimalMarker = ({ animal, position, onSelect, earthRef }) => {
       const speed = isDiscovered ? (hovered ? 6 : 2) : 5;
 
       // Combine two sine waves for a more organic "joyful" bounce
-      const bounce = (Math.sin(t * speed + position.x) + Math.sin(t * speed * 0.5)) * 0.5 * bounceHeight;
+      const bouncePhase = t * speed + position.x;
+      const bounce = (Math.sin(bouncePhase) + Math.sin(t * speed * 0.5)) * 0.5 * bounceHeight;
       const baseOffset = isDiscovered ? 0.05 : 0.08;
 
       const newPos = position.clone().add(normal.multiplyScalar(Math.abs(bounce) + baseOffset));
       markerRef.current.position.copy(newPos);
 
+      // Squash and stretch based on the derivative (velocity) of the bounce
+      const velocity = Math.cos(bouncePhase);
+      const squash = 1.0 - Math.abs(velocity) * 0.2; // Squish when moving fast
+      const stretch = 1.0 + Math.abs(velocity) * 0.2;
+
       // Smooth scaling on hover and a pop in when discovered
-      let targetScale = 1;
+      let targetScaleX = squash;
+      let targetScaleY = stretch;
+      let targetScaleZ = squash;
+
+      let baseScale = 1;
       if (hovered) {
-        targetScale = 1.5;
+        baseScale = 1.5;
       } else if (isDiscovered) {
         // slight pulsating if discovered but not hovered to keep it alive and fun
-        targetScale = 1.0 + Math.sin(t * 3) * 0.05;
+        baseScale = 1.0 + Math.sin(t * 3) * 0.05;
       }
 
-      markerRef.current.scale.lerp({ x: targetScale, y: targetScale, z: targetScale }, 0.2);
+      markerRef.current.scale.lerp({
+        x: targetScaleX * baseScale,
+        y: targetScaleY * baseScale,
+        z: targetScaleZ * baseScale
+      }, 0.2);
     }
 
     if (pedestalRef.current) {
@@ -163,11 +178,13 @@ const AnimalMarker = ({ animal, position, onSelect, earthRef }) => {
     <group
       onClick={(e) => {
         e.stopPropagation();
+        if (!isDiscovered) playDiscoverSound();
         onSelect(animal);
       }}
       onPointerOver={(e) => {
         e.stopPropagation();
         setHovered(true);
+        if (!hovered) playHoverSound();
         document.body.style.cursor = 'pointer';
       }}
       onPointerOut={(e) => {
@@ -273,14 +290,63 @@ export default function Globe() {
   const radius = 2; // Globe radius
 
   const cloudsRef = useRef();
+  const starsRef = useRef();
 
   // Load textures
-  const [colorMap, bumpMap, specularMap, cloudsMap] = useTexture([
+  const [colorMap, bumpMap, specularMap, cloudsMap, nightMap] = useTexture([
     '/assets/textures/earth-blue-marble.jpg',
     '/assets/textures/earth-topology.png',
     '/assets/textures/earth-water.png',
-    '/assets/textures/earth-clouds.png'
+    '/assets/textures/earth-clouds.png',
+    '/assets/textures/earth-night.jpg'
   ]);
+
+  // Create custom shader material for day/night blending
+  const earthMaterial = useMemo(() => {
+    const material = new THREE.MeshStandardMaterial({
+      map: colorMap,
+      bumpMap: bumpMap,
+      bumpScale: 0.03,
+      roughnessMap: specularMap,
+      roughness: 0.4,
+      metalnessMap: specularMap,
+      metalness: 0.4,
+    });
+
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms.tNight = { value: nightMap };
+      // Light direction from our directional light
+      shader.uniforms.sunDirection = { value: new THREE.Vector3(20, 10, 10).normalize() };
+
+      shader.fragmentShader = shader.fragmentShader.replace(
+        '#include <map_pars_fragment>',
+        `
+        #include <map_pars_fragment>
+        uniform sampler2D tNight;
+        uniform vec3 sunDirection;
+        `
+      );
+
+      shader.fragmentShader = shader.fragmentShader.replace(
+        '#include <emissivemap_fragment>',
+        `
+        #include <emissivemap_fragment>
+
+        // Calculate light intensity based on normal and sun direction
+        // Transform sunDirection to view space
+        vec3 viewSunDir = normalize((viewMatrix * vec4(sunDirection, 0.0)).xyz);
+        float dotNL = dot(normalize(vNormal), viewSunDir);
+        float nightIntensity = smoothstep(-0.2, 0.2, -dotNL); // Blend edge
+
+        vec3 nightColor = texture2D(tNight, vMapUv).rgb;
+        // Add night city lights only to the dark side's emissive radiance
+        totalEmissiveRadiance += nightColor * nightIntensity * 2.0;
+        `
+      );
+    };
+
+    return material;
+  }, [colorMap, bumpMap, specularMap, nightMap]);
 
   const setSelectedAnimal = useStore(state => state.setSelectedAnimal);
   const selectedAnimal = useStore(state => state.selectedAnimal);
@@ -319,6 +385,7 @@ export default function Globe() {
   useEffect(() => {
     if (cameraControlsRef.current) {
       if (selectedAnimal) {
+        playSwooshSound();
         // Find position of selected animal
         const position = latLongToVector3(selectedAnimal.lat, selectedAnimal.lon, radius);
         // Move camera slightly away from the marker for a good view
@@ -336,6 +403,9 @@ export default function Globe() {
     if (cloudsRef.current) {
       cloudsRef.current.rotation.y += 0.0005; // slowly rotate the clouds
     }
+    if (starsRef.current) {
+      starsRef.current.rotation.y += 0.0001; // slowly rotate the stars
+    }
     // Auto rotate globe if no animal selected
     if (cameraControlsRef.current && !selectedAnimal) {
        cameraControlsRef.current.azimuthAngle -= 0.1 * delta; // slow rotation
@@ -344,35 +414,42 @@ export default function Globe() {
 
   return (
     <>
-      <ambientLight intensity={0.1} />
+      <ambientLight intensity={0.05} />
       <directionalLight
         position={[20, 10, 10]}
-        intensity={3.5}
+        intensity={4.0}
         castShadow
-        color="#fffcee"
+        color="#ffead4" // warmer golden light
       />
       {/* Visible Sun mesh at directional light position */}
       <mesh position={[40, 20, 20]}>
-        <sphereGeometry args={[1.5, 32, 32]} />
-        <meshBasicMaterial color="#ffffee" />
+        <sphereGeometry args={[2.0, 32, 32]} />
+        <meshStandardMaterial
+          color="#ffffee"
+          emissive="#ffcc77"
+          emissiveIntensity={10.0}
+        />
       </mesh>
 
       {/* Subtle rim light for the dark side */}
       <directionalLight
         position={[-15, -5, -15]}
-        intensity={0.3}
-        color="#4a7cff"
+        intensity={0.8}
+        color="#2244ff" // deeper blue for contrast
       />
 
-      <Stars
-        radius={100}
-        depth={50}
-        count={7000}
-        factor={6}
-        saturation={0}
-        fade
-        speed={1.5}
-      />
+      {/* Rotating Starfield */}
+      <group ref={starsRef}>
+        <Stars
+          radius={100}
+          depth={50}
+          count={10000}
+          factor={5}
+          saturation={0}
+          fade
+          speed={1.5}
+        />
+      </group>
 
       <group ref={globeRef}>
         {/* Inner Atmosphere (Rayleigh scattering edge) */}
@@ -386,20 +463,7 @@ export default function Globe() {
         </Sphere>
 
         {/* The Earth Sphere */}
-        <Sphere args={[radius, 64, 64]} ref={earthRef}>
-          <meshStandardMaterial
-            map={colorMap}
-            bumpMap={bumpMap}
-            bumpScale={0.03}
-            roughnessMap={specularMap}
-            roughness={0.4}
-            metalnessMap={specularMap}
-            metalness={0.4}
-            emissiveMap={specularMap}
-            emissive="#001133"
-            emissiveIntensity={0.2}
-          />
-        </Sphere>
+        <Sphere args={[radius, 64, 64]} ref={earthRef} material={earthMaterial} />
 
         {/* Cloud Layer */}
         <Sphere args={[radius + 0.02, 64, 64]} ref={cloudsRef}>
@@ -453,6 +517,12 @@ export default function Globe() {
       />
 
       <EffectComposer>
+        <DepthOfField
+          focusDistance={0.01}
+          focalLength={0.2}
+          bokehScale={3}
+          height={480}
+        />
         <Bloom
           luminanceThreshold={0.2}
           luminanceSmoothing={0.9}
