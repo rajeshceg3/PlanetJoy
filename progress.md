@@ -32,5 +32,12 @@
 - UI layer fixes: Applied `zIndex: 1000` to the `Overlay.jsx` component to prevent the newly added 3D markers from bleeding through and overlapping the UI modal when many animals are present.
 - Dynamic tracking: Updated the global store (`useStore.js`) and UI components (`Globe.jsx`, `Overlay.jsx`) to dynamically compute and display the total number of animals based on the fetched JSON file.
 
+## New Visual and Joyful Enhancements
+- Implemented a custom GLSL day/night shader for the globe material (`onBeforeCompile`), accurately illuminating city lights on the dark side.
+- Integrated cinematic Depth of Field (DoF), Bloom, and Vignette post-processing effects.
+- Added procedural sound effects using the Web Audio API (zero-asset) for clicks, hovers, and discovery chimes.
+- Added playful squash-and-stretch CSS keyframe animations for undiscovered animal markers.
+- Switched to `useFrame` for safe, leak-free continuous animation of background stars and clouds.
+
 ## Completion Percentage
 - Estimated completion is 100% of the MVP architecture constraints and requirements outlined in `PRD.md`.
